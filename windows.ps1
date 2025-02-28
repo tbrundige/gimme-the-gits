@@ -20,5 +20,4 @@ Write-Host 'gh Installed' -ForegroundColor Green
 # Get dot files
 Write-Host "Dipping the dots..." -ForegroundColor Cyan
 Start-Job { gh repo clone tbrundige/dots } | Wait-Job | Out-Null
-Start-Job { pwsh './launch/windows.ps1' } | Wait-Job | Out-Null
-Write-Host 'Dots Dipped' -ForegroundColor Green
+pwsh './launch/windows.ps1'
