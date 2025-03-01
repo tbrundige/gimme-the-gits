@@ -16,7 +16,6 @@ $username = (gh auth status | Select-String -Pattern "Logged in to github.com ac
 if (!($username)) {
     gh auth login -w -p 'https'
     $username = (gh auth status | Select-String -Pattern "Logged in to github.com account (\S+)" | ForEach-Object { $_.Matches.Groups[1].Value })
-
 }
 
 # Exit it failed to auth with GitHub
