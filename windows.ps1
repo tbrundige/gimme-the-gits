@@ -1,23 +1,31 @@
 # Run as Admin
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process Powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
+Set-Location (Split-Path -Parent $PSCommandPath)
 
-# Install pwsh
-Write-Host "Installing pwsh..." -ForegroundColor Cyan
-Start-Job { winget install -e --id Microsoft.PowerShell } | Wait-Job | Out-Null
-Write-Host 'pwsh Installed' -ForegroundColor Green
+$packages = Get-Content "winget.packages"
 
-# Install Git
-Write-Host "Installing Git..." -ForegroundColor Cyan
-Start-Job { winget install -e --id Git.Git } | Wait-Job | Out-Null
-Write-Host 'Git Installed' -ForegroundColor Green
+# Install packages in winget.packages
+Write-Host "Installing packages..." -ForegroundColor Green
+foreach ($package in $packages) {
+    winget install $package -e
+}
 
-# Install gh cli
-Write-Host "Installing gh..." -ForegroundColor Cyan
-Start-Job { winget install -e --id Microsoft.PowerShell } | Wait-Job | Out-Null
-gh auth login
-Write-Host 'gh Installed' -ForegroundColor Green
+$username = (gh auth status | Select-String -Pattern "Logged in to github.com account (\S+)" | ForEach-Object { $_.Matches.Groups[1].Value })
 
-# Get dot files
+# If GitHub CLI is installed, authenticate
+if (!($username)) {
+    gh auth login -w -p 'https'
+    $username = (gh auth status | Select-String -Pattern "Logged in to github.com account (\S+)" | ForEach-Object { $_.Matches.Groups[1].Value })
+
+}
+
+# Exit it failed to auth with GitHub
+if (!($username)) {
+    exit
+}
+
+# Start configuring
 Write-Host "Dipping the dots..." -ForegroundColor Cyan
-Start-Job { gh repo clone tbrundige/dots } | Wait-Job | Out-Null
-pwsh './launch/windows.ps1'
+gh repo clone $username/dots
+
+pwsh '.\dots\launch\windows.ps1'
