@@ -1,5 +1,3 @@
-# Run as Admin
-if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process Powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
 Set-Location (Split-Path -Parent $PSCommandPath)
 
 $packages = Get-Content "winget.packages"
