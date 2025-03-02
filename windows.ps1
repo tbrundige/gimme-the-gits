@@ -5,10 +5,15 @@ Invoke-WebRequest -Uri "https://raw.githubusercontent.com/tbrundige/gimme-the-gi
 $packages = Get-Content "winget.packages"
 
 # Install packages in winget.packages
-Write-Host "Installing packages..." -ForegroundColor Green
+Write-Host "Installing packages..." -ForegroundColor Cyan
 foreach ($package in $packages) {
     winget install $package -e
 }
+
+# Refresh env
+Write-Host "Refreshing env..." -ForegroundColor Green
+$env:Path=[System.Environment]::GetEnvironmentVariable("Path","User")
+$env:Path+=[System.Environment]::GetEnvironmentVariable("Path","Machine")
 
 $username = (gh auth status | Select-String -Pattern "Logged in to github.com account (\S+)" | ForEach-Object { $_.Matches.Groups[1].Value })
 
