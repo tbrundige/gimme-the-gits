@@ -1,5 +1,7 @@
 Set-Location (Split-Path -Parent $PSCommandPath)
 
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/tbrundige/gimme-the-gits/refs/heads/main/winget.packages" -OutFile "winget.packages"
+
 $packages = Get-Content "winget.packages"
 
 # Install packages in winget.packages
